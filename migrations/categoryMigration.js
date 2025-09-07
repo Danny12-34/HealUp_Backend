@@ -6,7 +6,8 @@ const createTables = async () => {
         const createCategoriesQuery = `
         CREATE TABLE IF NOT EXISTS categories (
             category_id SERIAL PRIMARY KEY,
-            category_name VARCHAR(255) NOT NULL
+            category_name VARCHAR(255) NOT NULL,
+            category_image TEXT;
         )`;
         await pool.query(createCategoriesQuery);
         console.log("✅ Categories table created successfully!");
@@ -19,6 +20,7 @@ const createTables = async () => {
             description TEXT,
             price DECIMAL(10,2) NOT NULL,
             image VARCHAR(255),
+            category VARCHAR(255),
             created_at TIMESTAMP DEFAULT NOW(),
             updated_at TIMESTAMP DEFAULT NOW()
         )`;
