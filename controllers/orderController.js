@@ -11,12 +11,18 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// Get all orders
+// Get all orders with product name
 const getOrders = async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM orders ORDER BY order_id ASC');
+        const result = await pool.query(`
+            SELECT o.*, p.product_name
+            FROM orders o
+            LEFT JOIN product p ON o.product_id = p.product_id
+            ORDER BY o.order_id ASC
+        `);
         res.json(result.rows);
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: err.message });
     }
 };
@@ -25,7 +31,12 @@ const getOrders = async (req, res) => {
 const getOrderById = async (req, res) => {
     const { id } = req.params;
     try {
-        const result = await pool.query('SELECT * FROM orders WHERE order_id = $1', [id]);
+        const result = await pool.query(`
+            SELECT o.*, p.product_name
+            FROM orders o
+            LEFT JOIN product p ON o.product_id = p.product_id
+            WHERE o.order_id = $1
+        `, [id]);
         if (result.rows.length === 0) return res.status(404).json({ message: "Order not found" });
         res.json(result.rows[0]);
     } catch (err) {
@@ -35,12 +46,12 @@ const getOrderById = async (req, res) => {
 
 // Create order and send email
 const createOrder = async (req, res) => {
-    const { quantity, total_price, customer_name, customer_email, customer_phone, status } = req.body;
+    const { product_id, quantity, total_price, customer_name, customer_email, customer_phone, status } = req.body;
     try {
         const result = await pool.query(
-            `INSERT INTO orders (quantity, total_price, customer_name, customer_email, customer_phone, status)
-             VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-            [quantity, total_price, customer_name, customer_email, customer_phone, status || 'Pending']
+            `INSERT INTO orders (product_id, quantity, total_price, customer_name, customer_email, customer_phone, status)
+             VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+            [product_id, quantity, total_price, customer_name, customer_email, customer_phone, status || 'Pending']
         );
 
         // Send email notification
@@ -51,6 +62,7 @@ const createOrder = async (req, res) => {
             html: `
                 <h2>Hello ${customer_name},</h2>
                 <p>Your order <strong>#${result.rows[0].order_id}</strong> has been placed successfully!</p>
+                <p><strong>Product ID:</strong> ${product_id}</p>
                 <p><strong>Quantity:</strong> ${quantity}</p>
                 <p><strong>Total Price:</strong> $${total_price}</p>
                 <p><strong>Status:</strong> ${status || 'Pending'}</p>
@@ -88,7 +100,6 @@ const updateOrder = async (req, res) => {
 
         if (result.rows.length === 0) return res.status(404).json({ message: "Order not found" });
 
-        // Optional: send email notification on update
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: customer_email,

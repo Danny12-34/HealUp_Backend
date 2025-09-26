@@ -13,15 +13,21 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ---------------- Routes ----------------
-const categoryRoutes = require('./routes/categoryRoutes');
 const productRoutes = require('./routes/productRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const nutritionTipsRoutes = require('./routes/nutritionTipsRoutes');
+const mealRoutes = require('./routes/menuMealRoutes');
+const beverageRoutes = require('./routes/menuBeverageRoutes');
+const casesRoutes = require("./routes/casesRoutes");
 
-app.use('/api/categories', categoryRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/categories', categoryRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/nutrition-tips', nutritionTipsRoutes);
+app.use('/api/meals', mealRoutes);
+app.use('/api/beverages', beverageRoutes);
+app.use("/api/cases", casesRoutes);
 
 // ---------------- Default Route ----------------
 app.get('/', (req, res) => {
