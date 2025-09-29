@@ -20,6 +20,10 @@ const nutritionTipsRoutes = require('./routes/nutritionTipsRoutes');
 const mealRoutes = require('./routes/menuMealRoutes');
 const beverageRoutes = require('./routes/menuBeverageRoutes');
 const casesRoutes = require("./routes/casesRoutes");
+const breadRoutes = require("./routes/breadRoutes");
+const breadOrderRoutes = require('./routes/breadOrderRoutes');
+
+
 
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
@@ -28,6 +32,8 @@ app.use('/api/nutrition-tips', nutritionTipsRoutes);
 app.use('/api/meals', mealRoutes);
 app.use('/api/beverages', beverageRoutes);
 app.use("/api/cases", casesRoutes);
+app.use("/api/breads", breadRoutes);
+app.use('/api/bread-orders', breadOrderRoutes);
 
 // ---------------- Default Route ----------------
 app.get('/', (req, res) => {
