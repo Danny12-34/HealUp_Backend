@@ -3,12 +3,13 @@ const pool = require("../config/db");
 // ✅ Create bread
 exports.createBread = async (req, res) => {
   try {
-    const { bread_description, price } = req.body;
+    const { bread_description, price, category, case_type } = req.body;
     const photo = req.file ? req.file.filename : null;
 
     const result = await pool.query(
-      "INSERT INTO bread (bread_description, price, photo) VALUES ($1, $2, $3) RETURNING *",
-      [bread_description, price, photo]
+      `INSERT INTO bread (bread_description, price, photo, category, case_type) 
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [bread_description, price, photo, category, case_type]
     );
 
     res.status(201).json(result.rows[0]);
@@ -47,12 +48,17 @@ exports.getBreadById = async (req, res) => {
 // ✅ Update bread
 exports.updateBread = async (req, res) => {
   try {
-    const { bread_description, price } = req.body;
+    const { bread_description, price, category, case_type } = req.body;
     const photo = req.file ? req.file.filename : null;
 
     const result = await pool.query(
-      "UPDATE bread SET bread_description=$1, price=$2, photo=COALESCE($3, photo) WHERE id=$4 RETURNING *",
-      [bread_description, price, photo, req.params.id]
+      `UPDATE bread 
+       SET bread_description=$1, price=$2, 
+           photo=COALESCE($3, photo), 
+           category=$4, case_type=$5,
+           updated_at=NOW()
+       WHERE id=$6 RETURNING *`,
+      [bread_description, price, photo, category, case_type, req.params.id]
     );
 
     if (result.rows.length === 0) {

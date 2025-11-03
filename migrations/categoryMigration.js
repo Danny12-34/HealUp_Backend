@@ -59,6 +59,48 @@ const createTables = async () => {
     await pool.query(createNutritionTipsQuery);
     console.log("✅ Nutrition Tips table created successfully!");
 
+    // 4️⃣ Breadorder table
+
+    const createBreadOrdersQuery = `
+  CREATE TABLE IF NOT EXISTS bread_orders (
+    id SERIAL PRIMARY KEY,
+    bread_id INT NOT NULL,
+    bread_name VARCHAR(255) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    quantity INT NOT NULL,
+    total_price DECIMAL(10,2) NOT NULL,
+    customer_name VARCHAR(255) NOT NULL,
+    customer_email VARCHAR(255) NOT NULL,
+    customer_phone VARCHAR(20),
+    status VARCHAR(50) DEFAULT 'Pending',
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+  )
+`;
+
+    await pool.query(createBreadOrdersQuery);
+    console.log("✅ Bread Orders table created successfully!");
+
+
+
+    const createBreadTableQuery = `
+  CREATE TABLE IF NOT EXISTS bread (
+    id SERIAL PRIMARY KEY,
+    bread_description TEXT NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    photo VARCHAR(255),
+    category VARCHAR(100),
+    case_type VARCHAR(100),
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+  )
+`;
+
+    await pool.query(createBreadTableQuery);
+    console.log("✅ Bread table created successfully!");
+
+
+
     // 5️⃣ Menu_Meal table
     const createMenuMealQuery = `
       CREATE TABLE IF NOT EXISTS menu_meal (
@@ -76,23 +118,7 @@ const createTables = async () => {
     await pool.query(createMenuMealQuery);
     console.log("✅ Menu_Meal table created successfully!");
 
-    // 6️⃣ Menu_Beverage table
-    // const createMenuBeverageQuery = `
-    //   CREATE TABLE IF NOT EXISTS menu_beverage (
-    //     id SERIAL PRIMARY KEY,
-    //     product_name VARCHAR(255) NOT NULL,
-    //     description TEXT,
-    //     price DECIMAL(10,2) NOT NULL,
-    //     Category VARCHAR(255) NOT NULL,
-    //     photo TEXT,
-    //     created_at TIMESTAMP DEFAULT NOW(),
-    //     updated_at TIMESTAMP DEFAULT NOW()
-    //   )
-    // `;
-    // await pool.query(createMenuBeverageQuery);
-    // console.log("✅ Menu_Beverage table created successfully!");
 
-    // 7️⃣ Cases table (NEW)
     const createCasesQuery = `
       CREATE TABLE IF NOT EXISTS cases (
         case_id SERIAL PRIMARY KEY,
